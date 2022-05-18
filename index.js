@@ -1,7 +1,7 @@
 const express = require('express');
 const cors = require('cors');
 
-const { MongoClient, ServerApiVersion } = require('mongodb');
+const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 require('dotenv').config();
 const port = process.env.PORT || 5000;
 const app = express();
@@ -21,11 +21,6 @@ async function run() {
         const allTaskCollection = client.db('to-do-app').collection('task');
 
 
-        app.post('/addTask', async (req, res) => {
-            const addTask = req.body;
-            const result = await allTaskCollection.insertOne(addTask);
-            res.send(result);
-        })
 
 
         app.get('/addTask', async (req, res) => {
@@ -34,6 +29,28 @@ async function run() {
             const tasks = await cursor.toArray();
             res.send(tasks);
         });
+
+        app.get('/addTask/:id', async (req, res) => {
+            const id = req.params.id;
+            const query = { _id: ObjectId(id) };
+            const item = await allTaskCollection.findOne(query);
+            res.send(item);
+        });
+
+        app.post('/addTask', async (req, res) => {
+            const addTask = req.body;
+            const result = await allTaskCollection.insertOne(addTask);
+            res.send(result);
+        });
+
+        // Delete user added Tasks 
+        app.delete('/addTask/:id', async (req, res) => {
+            const id = req.params.id;
+            const query = { _id: ObjectId(id) };
+            const result = await allTaskCollection.deleteOne(query);
+            res.send(result);
+        })
+
 
     }
     finally {
