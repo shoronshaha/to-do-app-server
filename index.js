@@ -28,6 +28,13 @@ async function run() {
         })
 
 
+        app.get('/addTask', async (req, res) => {
+            const query = {};
+            const cursor = allTaskCollection.find(query);
+            const tasks = await cursor.toArray();
+            res.send(tasks);
+        });
+
     }
     finally {
 
